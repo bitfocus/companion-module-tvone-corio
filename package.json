@@ -1,0 +1,24 @@
+{
+	"name": "tvone-corio",
+	"version": "1.0.0",
+	"api_version": "1.0.0",
+	"keywords": [
+		"Video Scaler",
+		"Video Converter",
+		"Video Processing",
+		"Format Conversion",
+		"Video"
+	],
+	"manufacturer": "TVOne",
+	"product": [
+		"Corio C2"
+	],
+	"shortname": "Corio",
+	"description": "Companion module for TVOne Corio C2 scalers",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "Peter Daniel",
+	"license": "MIT"
+}
