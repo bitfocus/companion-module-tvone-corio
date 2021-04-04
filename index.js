@@ -324,14 +324,14 @@ instance.prototype.init_tcp = function() {
 		});
 
 		self.socket.on('error', function (err) {
-			debug("Network error", err);
+			debug('Network error', err);
 			self.status(self.STATE_ERROR, err);
-			self.log('error',"Network error: " + err.message);
+			self.log('error','Network error: ' + err.message);
 		});
 
 		self.socket.on('connect', function () {
 			self.status(self.STATE_OK);
-			debug("Connected");
+			debug('Connected');
 		})
 
 		// separate buffered stream into lines with responses
@@ -427,7 +427,7 @@ instance.prototype.destroy = function () {
 		self.socket.destroy();
 	}
 
-	debug("destroy", self.id);
+	debug('destroy', self.id);
 };
 
 // Variables and Feedback
