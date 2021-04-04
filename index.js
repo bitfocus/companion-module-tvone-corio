@@ -107,6 +107,14 @@ instance.prototype.init_presets = function () {
 				options: {
 					priInput: self.priInput[i].id,
 				}
+			}],
+			feedbacks: [{
+				type: 'priInputFeedback',
+				options: {
+					bg: self.rgb(255,0,0),
+					fg: self.rgb(255,255,255),
+					input: self.priInput[i].id				
+				}
 			}]
 		});	
 	}
@@ -127,6 +135,14 @@ instance.prototype.init_presets = function () {
 				action: 'backgroundInput',
 				options: {
 					backgroundInput: self.backgroundInput[i].id,
+				}
+			}],
+			feedbacks: [{
+				type: 'bgInputFeedback',
+				options: {
+					bg: self.rgb(255,0,0),
+					fg: self.rgb(255,255,255),
+					bgInput: self.backgroundInput[i].id				
 				}
 			}]
 		});	
@@ -356,10 +372,10 @@ instance.prototype.init_tcp = function() {
 					if (line.substr(1,2) == '44')
 					{
 						// all good
-						cmdRx = line.substr(9,2); 
+						cmdRx = line.substr(7,4); 
 						switch (cmdRx)
 						{
-							case '9C': {
+							case '009C': {
 								// freeze
 								freezeState = line.substr(15,2);
 								console.log('freeze state: ' + freezeState);
@@ -367,13 +383,24 @@ instance.prototype.init_tcp = function() {
 								self.checkFeedbacks('freeze');
 								break;
 							}
-							case '82': {
+							case '0082': {
 								// pri input
 								priInputState = line.substr(15,2);
-								console.log('feedback input: ' + priInputState);
-								// self.priInput = priInputState;
-								// self.checkFeedbacks('priInput');
+								console.log('feedback pri input: ' + priInputState);
+								self.priInputFeedback = priInputState;
+								self.checkFeedbacks('priInputFeedback');
 								break;								
+							}
+							case '0149': {
+								// background input
+								bgInputState = line.substr(15,2);
+								console.log('background input: ' + bgInputState);
+								self.bgInputFeedback = bgInputState;
+								self.checkFeedbacks('bgInputFeedback');
+								break;
+							}
+							default: {
+								// console.log(line);
 							}
 						}
 					}
@@ -443,17 +470,69 @@ instance.prototype.update_variables = function (system) {
 		options: [
 			{
 				type: 'colorpicker',
-				label: 'Foreground color',
+				label: 'Foreground colour',
 				id: 'fg',
 				default: self.rgb(255,255,255)
 			},
 			{
 				type: 'colorpicker',
-				label: 'Background color',
+				label: 'Background colour',
 				id: 'bg',
 				default: self.rgb(255,102,0)
 			}
 		]
+	};
+	
+	feedbacks['priInputFeedback'] = {
+		label: 'Primary Input: Change background colour',
+		description: 'Change colour of button on currenly active Primary Input',
+		options: [
+			{
+				type: 'colorpicker',
+				label: 'Foreground colour',
+				id: 'fg',
+				default: self.rgb(255,255,255)
+			},
+			{
+				type: 'colorpicker',
+				label: 'Background colour',
+				id: 'bg',
+				default: self.rgb(255,0,0)
+			},
+			{
+				type: 'dropdown',
+				label: 'Input',
+				id: 'input',
+				default: '10',
+				choices: self.priInput
+			}
+			]
+	};
+	
+	feedbacks['bgInputFeedback'] = {
+		label: 'Background Input: Change background colour',
+		description: 'Change colour of button on currenly active Background Input',
+		options: [
+			{
+				type: 'colorpicker',
+				label: 'Foreground colour',
+				id: 'fg',
+				default: self.rgb(255,255,255)
+			},
+			{
+				type: 'colorpicker',
+				label: 'Background colour',
+				id: 'bg',
+				default: self.rgb(255,0,0)
+			},
+			{
+				type: 'dropdown',
+				label: 'Input',
+				id: 'bgInput',
+				default: '10',
+				choices: self.backgroundInput
+			}
+			]
 	};
 
 	self.setFeedbackDefinitions(feedbacks);
@@ -543,12 +622,12 @@ instance.prototype.actions = function (system) {
 instance.prototype.feedback = function(feedback, bank) {
 	var self = this;
 
-	// self.log('debug','checking feedback ' + feedback.type)
+	console.log('checking feedback: ' + feedback.type)
 
 	switch (feedback.type) {
 	
 		case 'freeze': {
-			console.log('self.freeze: ' + self.freeze);
+			// console.log('self.freeze: ' + self.freeze);
 			if (self.freeze === '01') {
 				return {
 					color: feedback.options.fg,
@@ -557,9 +636,24 @@ instance.prototype.feedback = function(feedback, bank) {
 			}
 			break;
 		}
-		case 'priInput': {
-			
-			console.log('self.priInput: ' + self.priInput);		
+		case 'priInputFeedback': {
+			// console.log('feedback priInput: ' + feedback.options.priInput);		
+			if (self.priInputFeedback === feedback.options.input) {
+				return {
+					color: feedback.options.fg,
+					bgcolor: feedback.options.bg
+				};
+			}
+			break;
+		}
+		case 'bgInputFeedback': {
+			// console.log('feedback priInput: ' + feedback.options.priInput);		
+			if (self.bgInputFeedback === feedback.options.bgInput) {
+				return {
+					color: feedback.options.fg,
+					bgcolor: feedback.options.bg
+				};
+			}
 			break;
 		}
 	}
