@@ -367,14 +367,11 @@ instance.prototype.init_tcp = function() {
 		self.socket.on('receiveline', function (line) {
 
 			if (line.length == 19) {
-				if (line.substr(0,1) == 'F')
-				{
-					if (line.substr(1,2) == '44')
-					{
+				if (line.substr(0,1) == 'F') {
+					if (line.substr(1,2) == '44') {
 						// all good
 						cmdRx = line.substr(7,4); 
-						switch (cmdRx)
-						{
+						switch (cmdRx) {
 							case '009C': {
 								// freeze
 								freezeState = line.substr(15,2);
@@ -403,9 +400,7 @@ instance.prototype.init_tcp = function() {
 								// console.log(line);
 							}
 						}
-					}
-					else
-					{
+					} else {
 						self.log('error','Error message received from unit: ' + line)
 					}
 				}
@@ -435,7 +430,8 @@ instance.prototype.config_fields = function () {
 			label: 'Device IP',
 			width: 6,
 			regex: self.REGEX_IP
-		},{
+		},
+		{
 			type: 'textinput',
 			id: 'port',
 			label: 'Control port',
@@ -717,8 +713,7 @@ instance.prototype.sendCmd = function (cmdStr) {
 	var chunks = new Array(numChunks)
 	
 	// for each 2 character byte convert to decimal and add them together
-	for (var i = 0, o = 0; i < numChunks; ++i, o += 2)
-	{
+	for (var i = 0, o = 0; i < numChunks; ++i, o += 2) {
 		chunks[i] = cmdStr.substr(o, 2);
 		checksum = checksum + parseInt(chunks[i], 16);	
 		// self.log('error',chunks[i] + ' : ' + checksum);
@@ -744,9 +739,7 @@ instance.prototype.sendCmd = function (cmdStr) {
 		} else {
 			debug('Socket not connected :(');
 		}
-	}
-	else
-	{
+	} else {
 		self.log('error','Command string incorrect length (' + cmdStr.length + ')');
 	}
 };
